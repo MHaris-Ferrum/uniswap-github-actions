@@ -23,6 +23,7 @@ jobs:
       - uses: aquiladev/ipfs-action@master
         with:
           path: ./build
+          pinName: "Staking-Test_Deployment"
           service: pinata
           pinataKey: ${{ secrets.PINATA_KEY }}
           pinataSecret: ${{ secrets.PINATA_SECRET }}
