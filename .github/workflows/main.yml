@@ -28,3 +28,5 @@ jobs:
           pinataKey: ${{ secrets.PINATA_KEY }}
           pinataSecret: ${{ secrets.PINATA_SECRET }}
           verbose: true
+      - name: Output IPFS Hash
+        run: echo "The IPFS hash is ${{ steps.upload.outputs.hash }}"
