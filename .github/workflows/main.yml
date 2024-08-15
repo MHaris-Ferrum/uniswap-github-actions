@@ -20,12 +20,9 @@ jobs:
 
       - run: npm run build
 
-      - uses: anantaramdas/ipfs-pinata-deploy-action@v1.6.4
-        id: pinata
+      - uses: aquiladev/ipfs-action@master
         with:
-          pin-name: 'My personal site'
-          path: './build'
-          pinata-api-key: ${{ secrets.PINATA_KEY }}
-          pinata-secret-api-key: ${{ secrets.PINATA_SECRET }}
-          verbose: true
-          remove-old: false
+          path: ./build
+          service: pinata
+          pinataKey: ${{ secrets.PINATA_KEY }}
+          pinataSecret: ${{ secrets.PINATA_SECRET }}
