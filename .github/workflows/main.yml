@@ -20,10 +20,25 @@ jobs:
 
       - run: npm run build
 
-      - uses: aquiladev/ipfs-action@v0.1.3
+      - name: Pin to IPFS
+        uses: aquiladev/ipfs-action@master
         id: pinata
         with:
           path: ./build
+          pinName: "staking ui"
           service: pinata
           pinataKey: ${{ secrets.PINATA_KEY }}
           pinataSecret: ${{ secrets.PINATA_SECRET }}
+          verbose: true
+
+      - name: Output IPFS Hash
+        run: echo "The IPFS hash is ${{ steps.pinata.outputs.hash }}"
+
+      - name: Convert CIDv0 to CIDv1
+        id: convert-cidv0
+        uses: uniswap/convert-cidv0-cidv1@v1.0.0
+        with:
+          cidv0: ${{ steps.pinata.outputs.hash }}
+
+      - name: Use CIDv1
+        run: echo ${{ steps.convert-cidv0.outputs.cidv1 }}
