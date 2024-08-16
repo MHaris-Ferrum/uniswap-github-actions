@@ -20,12 +20,20 @@ jobs:
 
       - run: npm run build
 
+      - name: Tag
+        id: github-tag-action
+        uses: uniswap/github-tag-action@7bddacd4864a0f5671e836721db60174d8a9c399
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          custom_tag: ${{ steps.version.outputs.content }}
+          tag_prefix: ""
+
       - name: Pin to IPFS
         uses: aquiladev/ipfs-action@master
         id: pinata
         with:
           path: ./build
-          pinName: "staking ui"
+          pinName: "staking" ${{ steps.github-tag-action.outputs.new_tag }}
           service: pinata
           pinataKey: ${{ secrets.PINATA_KEY }}
           pinataSecret: ${{ secrets.PINATA_SECRET }}
@@ -41,19 +49,14 @@ jobs:
           cidv0: ${{ steps.pinata.outputs.hash }}
 
       - name: Use CIDv1
-        run: echo ${{ steps.convert-cidv0.outputs.cidv1 }}
+        run: |
+          IPFS hash of the deployment:
+          - CIDv0: `${{ steps.pinata.outputs.hash }}`
+          - CIDv1: `${{ steps.convert-cidv0.outputs.cidv1 }}`
 
-      - name: Publish release
-        uses: actions/create-release@v1.1.0
-        with:
-          body: |
-            IPFS hash of the deployment:
-            - CIDv0: `${{ steps.pinata.outputs.hash }}`
-            - CIDv1: `${{ steps.convert-cidv0.outputs.cidv1 }}`
+          The latest release is always mirrored at staking.x.io
 
-            The latest release is always mirrored at staking.x.io
-
-            IPFS gateways:
-            - https://${{ steps.convert-cidv0.outputs.cidv1 }}.ipfs.dweb.link/
-            - https://${{ steps.convert-cidv0.outputs.cidv1 }}.ipfs.cf-ipfs.com/
-            - [ipfs://${{ steps.pinata.outputs.hash }}/](ipfs://${{ steps.pinata.outputs.hash }}/)
+          IPFS gateways:
+          - https://${{ steps.convert-cidv0.outputs.cidv1 }}.ipfs.dweb.link/
+          - https://${{ steps.convert-cidv0.outputs.cidv1 }}.ipfs.cf-ipfs.com/
+          - [ipfs://${{ steps.pinata.outputs.hash }}/](ipfs://${{ steps.pinata.outputs.hash }}/)
